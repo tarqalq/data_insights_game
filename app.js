@@ -262,5 +262,12 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
+const { Pool } = require('pg');
+
+// تأكد أن الكود يقرأ الرابط من DATABASE_URL
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false // هذا السطر ضروري جداً لبيئة Render
+    }
+});
