@@ -1,0 +1,230 @@
+<%- include('partials/header') %>
+
+<div class="container container-wide animate-pop">
+    <h1 class="main-title">لوحة تحكم الآدمن 👑</h1>
+    
+    <div id="adminTimerArea" class="timer-wrapper" style="display: none; justify-content: center; margin-bottom: 20px;">
+        <span class="timer-icon">⏳</span>
+        <span id="adminTimerDisplay" class="timer-count">0</span>
+    </div>
+
+    <div class="stats-card-main">
+        <p class="stats-label">المشاركون في القاعة الآن:</p>
+        <div class="counter-glow-wrapper-admin">
+            <span id="countDisplay" class="counter-number-admin">0</span>
+        </div>
+    </div>
+
+    <div id="roundSelectorContainer" class="round-card">
+        <p class="section-subtitle">اختر رقم الجولة لبدء الأسئلة:</p>
+        <div id="roundGrid" class="round-grid-modern">
+            </div>
+    </div>
+
+    <div id="adminProgress" class="warning-box" style="display: none; border-style: solid; background: rgba(16, 185, 129, 0.1); border-color: var(--accent-green);">
+        <p id="progressLabel" class="progress-text" style="margin:0; font-weight: bold; font-size: 1.2rem;">
+            الإجابات المستلمة: <span id="adminAnswersCount" class="counter-number-admin" style="font-size: 2rem;">0</span>
+            <span id="totalVs" style="display:none;"> / <span id="expectedCount">0</span></span>
+        </p>
+    </div>
+
+    <div class="admin-section" style="margin-top: 30px;">
+        <h4 class="section-subtitle">قائمة الحضور:</h4>
+        <div class="player-labels-container" id="playerList">
+            <p class="empty-msg">لا يوجد مشاركون...</p>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="admin-controls-flex">
+        <button id="startBtn" class="btn-primary">
+            إطلاق الأسئلة المزدوجة 🚀
+        </button>
+        
+        <button id="revealBtn" class="btn-primary btn-action-blue" style="display: none;">
+            كشف الإجابات للتصويت 🧐
+        </button>
+
+        <button id="showSpiesBtn" class="btn-primary btn-action-purple" style="display: none;">
+            كشف الجواسيس والنتائج 🔥
+        </button>
+
+        <button id="goLeaderboardBtn" class="btn-primary btn-action-orange" style="display: none;">
+            عرض لوحة المتصدرين (عند الكل) 🏆
+        </button>
+
+        <button id="nextRoundBtn" class="btn-primary btn-action-dark" style="display: none;">
+            العودة للوبي (جولة جديدة) 🔄
+        </button>
+
+        <button id="cancelRoundBtn" class="btn-primary btn-action-dark" style="background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444;">
+            إعادة الجميع لصفحة الانتظار ↩️
+        </button>
+    </div>
+
+    <button onclick="handleFullReset()" class="btn-danger-minimal" style="margin-top: 40px; background: none; border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 10px; border-radius: 10px; cursor: pointer; width: 100%;">
+        إعادة ضبط الجلسة (مسح شامل وقاعدة البيانات) 🚨
+    </button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io(); 
+    let selectedRoundIndex = null;
+    let timerInterval;
+
+    const countDisplay = document.getElementById('countDisplay');
+    const playerListDiv = document.getElementById('playerList');
+    const startBtn = document.getElementById('startBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const showSpiesBtn = document.getElementById('showSpiesBtn');
+    const goLeaderboardBtn = document.getElementById('goLeaderboardBtn');
+    const nextRoundBtn = document.getElementById('nextRoundBtn');
+    const cancelRoundBtn = document.getElementById('cancelRoundBtn');
+    const adminProgress = document.getElementById('adminProgress');
+    const adminAnswersCount = document.getElementById('adminAnswersCount');
+    const progressLabel = document.getElementById('progressLabel');
+    const roundGrid = document.getElementById('roundGrid');
+    const roundSelectorContainer = document.getElementById('roundSelectorContainer');
+    const expectedCount = document.getElementById('expectedCount');
+    const totalVs = document.getElementById('totalVs');
+    const adminTimerArea = document.getElementById('adminTimerArea');
+    const adminTimerDisplay = document.getElementById('adminTimerDisplay');
+
+    // إنشاء أزرار الجولات
+    for (let i = 0; i < 10; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = i + 1;
+        btn.className = "round-btn-modern"; 
+        btn.onclick = () => {
+            document.querySelectorAll('.round-btn-modern').forEach(b => b.classList.remove('active-round'));
+            btn.classList.add('active-round');
+            selectedRoundIndex = i;
+        };
+        roundGrid.appendChild(btn);
+    }
+
+    // العداد التنازلي بنظام وقت النهاية الموحد
+    socket.on('start_countdown', (endTime) => {
+        if (!adminTimerArea || !adminTimerDisplay) return;
+
+        clearInterval(timerInterval);
+        adminTimerArea.style.display = 'inline-flex';
+
+        timerInterval = setInterval(() => {
+            const timeLeft = Math.ceil((endTime - Date.now()) / 1000);
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                adminTimerDisplay.innerText = "0";
+                return;
+            }
+
+            adminTimerDisplay.innerText = timeLeft;
+            if (timeLeft <= 5) adminTimerDisplay.classList.add('timer-low');
+            else adminTimerDisplay.classList.remove('timer-low');
+        }, 1000);
+    });
+
+    socket.on('update_player_count', (count) => {
+        countDisplay.innerText = count;
+    });
+
+    socket.on('update_player_list', (players) => {
+        if (!playerListDiv) return;
+        playerListDiv.innerHTML = players.length === 0 ? 
+            '<p class="empty-msg">لا يوجد مشاركون...</p>' : 
+            players.map(p => `<span class="player-label-tag">👤 ${p.name}</span>`).join('');
+    });
+
+    // ملاحظة: حذفنا مستقبل nav_to_leaderboard من هنا لكي لا تنتقل صفحة الآدمن
+
+    startBtn.addEventListener('click', () => {
+        if (selectedRoundIndex === null) return alert('فضلاً اختر رقم الجولة أولاً!');
+        const currentCount = parseInt(countDisplay.innerText);
+        if (currentCount < 1) return alert('يجب وجود لاعب واحد على الأقل!');
+        
+        socket.emit('admin_start_game', { roundIndex: selectedRoundIndex });
+        
+        startBtn.style.display = 'none';
+        roundSelectorContainer.style.display = 'none';
+        adminProgress.style.display = 'block';
+        cancelRoundBtn.style.display = 'block'; 
+        progressLabel.firstChild.textContent = "الإجابات المستلمة: ";
+        totalVs.style.display = 'none';
+        revealBtn.style.display = 'block';
+    });
+
+    socket.on('answer_received_count', (count) => {
+        adminAnswersCount.innerText = count;
+    });
+
+    revealBtn.addEventListener('click', () => {
+        socket.emit('admin_reveal_answers');
+        revealBtn.style.display = 'none';
+        progressLabel.firstChild.textContent = "عدد المصوتين: ";
+        totalVs.style.display = 'inline';
+        
+        const currentTotal = parseInt(countDisplay.innerText);
+        let spyCount = Math.floor((currentTotal - 1) / 10) + 1;
+        const expectedVoters = currentTotal - spyCount;
+        expectedCount.innerText = expectedVoters;
+        
+        showSpiesBtn.style.display = 'block';
+    });
+
+    showSpiesBtn.addEventListener('click', () => {
+        if(confirm('هل تريد كشف الجواسيس والنتائج؟')) {
+            socket.emit('admin_show_spies');
+            showSpiesBtn.style.display = 'none';
+            goLeaderboardBtn.style.display = 'block';
+            clearInterval(timerInterval);
+            adminTimerArea.style.display = 'none';
+        }
+    });
+
+    // يرسل الطلب للسيرفر ليحول "الكل" ما عدا صفحة الآدمن لأنها لا تملك مستقبل nav_to_leaderboard
+    goLeaderboardBtn.addEventListener('click', () => {
+        socket.emit('admin_go_to_leaderboard');
+        goLeaderboardBtn.style.display = 'none';
+        nextRoundBtn.style.display = 'block'; // يظهر زر الجولة التالية للآدمن فوراً
+    });
+
+    const resetUI = () => {
+        startBtn.style.display = 'block';
+        roundSelectorContainer.style.display = 'block';
+        adminProgress.style.display = 'none';
+        revealBtn.style.display = 'none';
+        showSpiesBtn.style.display = 'none';
+        goLeaderboardBtn.style.display = 'none';
+        nextRoundBtn.style.display = 'none';
+        clearInterval(timerInterval);
+        adminTimerArea.style.display = 'none';
+        totalVs.style.display = 'none';
+        selectedRoundIndex = null;
+        document.querySelectorAll('.round-btn-modern').forEach(b => b.classList.remove('active-round'));
+        adminAnswersCount.innerText = "0";
+    };
+
+    nextRoundBtn.addEventListener('click', () => {
+        socket.emit('admin_next_round');
+        resetUI();
+    });
+
+    cancelRoundBtn.addEventListener('click', () => {
+        if(confirm('سيتم إرجاع جميع المتصلين لصفحة الانتظار، هل أنت متأكد؟')) {
+            socket.emit('admin_next_round');
+            resetUI();
+        }
+    });
+
+    function handleFullReset() {
+        if(confirm('🚨 تحذير: سيتم مسح قاعدة البيانات وطرد الجميع. هل أنت متأكد؟')) {
+            socket.emit('admin_full_reset_db');
+            setTimeout(() => location.reload(), 500);
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

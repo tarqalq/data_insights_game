@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+<div class="container animate-pop">
+    <div class="status-indicator-wrapper">
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle-inner"></div>
+        <i class="status-icon">✨</i>
+    </div>
+    
+    <h2 class="main-title-lobby">أنت الآن في اللوبي!</h2>
+    <p class="lobby-subtext">تم تسجيل اسمك بنجاح. استرخِ قليلاً، ستبدأ الأسئلة فور إطلاقها من المنظم.</p>
+
+    <div class="divider"></div>
+
+    <div class="players-counter-section">
+        <div class="counter-glow-wrapper">
+            <span id="currentCount" class="counter-number">0</span>
+        </div>
+        <p class="counter-label">مشارك انضموا للفعالية حتى الآن</p>
+    </div>
+    
+    </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const currentCountDisp = document.getElementById('currentCount');
+    const storedName = localStorage.getItem('data_insights_name');
+
+    if (storedName) {
+        socket.emit('join_game', { name: storedName });
+    } else {
+        window.location.replace('/');
+    }
+
+    socket.on('update_player_count', (count) => {
+        if (currentCountDisp) {
+            currentCountDisp.innerText = count;
+        }
+    });
+
+    socket.on('receive_question', (data) => {
+        sessionStorage.setItem('currentQuestion', data.question);
+        sessionStorage.setItem('playerRole', data.role);
+        window.location.replace('/game');
+    });
+
+    socket.on('force_logout', () => {
+        localStorage.removeItem('data_insights_name');
+        sessionStorage.clear();
+        window.location.replace('/');
+    });
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,459 @@
+/* --- 1. الإعدادات العامة والمتغيرات الفخمة --- */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+:root {
+    --primary-green: #064e3b;   
+    --accent-green: #10b981;    
+    --card-bg: rgba(6, 30, 24, 0.95); 
+    --card-border: rgba(16, 185, 129, 0.3); 
+    --text-gold: #fde047;       
+    --white: #ffffff;
+    --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-image: url('/Background_game.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 140px 0 40px 0;
+    direction: rtl;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--white);
+}
+
+/* --- 2. الهيدر واللوجو --- */
+.main-header { width: 100%; position: absolute; top: 0; z-index: 1000; }
+.header-container { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+.header-logo { height: 100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+.logo-text { font-weight: 800; font-size: 1.6rem; color: white; text-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+
+.main-footer {
+    width: 100%;
+    padding: 25px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    
+    /* هذا السطر يدفعه لأسفل الصفحة تماماً */
+    margin-top: auto; 
+    
+    
+    backdrop-filter: blur(5px);
+}
+
+/* --- 3. الكارد الأساسي (Container) --- */
+.container {
+    width: 92%;
+    max-width: 500px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 45px 35px;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), var(--shadow-glow);
+    text-align: center;
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+}
+
+.container-wide { max-width: 900px; } /* لزيادة عرض لوحة الآدمن */
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+}
+
+/* --- 4. ستايلات الآدمن (الجولات والعداد والأسماء) --- */
+
+/* عداد الآدمن - أصغر من اللوبي بطلبك */
+.counter-glow-wrapper-admin {
+    display: inline-block;
+    padding: 8px 30px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    margin: 15px 0;
+}
+.counter-number-admin {
+    font-size: 3.5rem; 
+    font-weight: 900;
+    color: var(--accent-green);
+    text-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+    line-height: 1;
+}
+
+/* شبكة الجولات - هنا التحكم في توزيع الأزرار */
+.round-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 أزرار في الصف */
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* الزر نفسه - هنا تكبره وتصغره بطلبك */
+.round-btn-modern {
+    padding: 22px; /* كبرت المسافة الداخلية ليكون الزر ضخماً */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 15px;
+    font-size: 1.5rem; /* كبرت حجم الرقم داخل الزر */
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.round-btn-modern:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); }
+
+.round-btn-modern.active-round {
+    background: var(--accent-green);
+    color: var(--primary-green);
+    border-color: var(--accent-green);
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+}
+
+/* ليبلات الأسماء في الآدمن */
+.player-labels-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+}
+.player-label-tag {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 1rem;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+/* --- 5. ستايلات اللوبي (النبض والعداد الضخم) --- */
+.status-indicator-wrapper {
+    position: relative; width: 100px; height: 100px; margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+}
+.pulse-circle {
+    position: absolute; width: 100%; height: 100%; background: rgba(16, 185, 129, 0.2);
+    border-radius: 50%; animation: pingPulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.pulse-circle-inner {
+    position: absolute; width: 70%; height: 70%; background: rgba(16, 185, 129, 0.4);
+    border-radius: 50%; animation: innerPulse 2s ease-in-out infinite;
+}
+.status-icon { font-style: normal; font-size: 2rem; z-index: 2; }
+
+@keyframes pingPulse { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes innerPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.15); opacity: 1; } }
+
+.counter-glow-wrapper {
+    display: inline-block; padding: 15px 40px; background: rgba(16, 185, 129, 0.05);
+    border-radius: 25px; border: 1px solid rgba(16, 185, 129, 0.2); margin: 20px 0;
+}
+.counter-number {
+    font-size: 5rem; font-weight: 900; color: var(--accent-green);
+    text-shadow: 0 0 30px rgba(16, 185, 129, 0.6); line-height: 1; display: block;
+}
+
+/* --- 6. الأزرار العامة والمدخلات --- */
+.btn-primary {
+    background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+    color: white; border: 1px solid rgba(255,255,255,0.2);
+    padding: 18px 30px; border-radius: 15px; font-size: 1.25rem;
+    font-weight: 700; cursor: pointer; width: 100%; margin: 10px 0; transition: 0.3s ease;
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4); }
+
+/* ألوان أزرار التحكم الإضافية */
+.btn-action-blue { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
+.btn-action-purple { background: linear-gradient(135deg, #4c1d95, #8b5cf6); }
+.btn-action-orange { background: linear-gradient(135deg, #7c2d12, #f97316); }
+
+input.input-standard {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px; padding: 15px; color: white; font-size: 1.2rem; text-align: center; width: 100%;
+}
+
+/* --- 7. التنبيهات والليدربورد --- */
+.warning-box {
+    background: rgba(253, 224, 71, 0.1); border: 1px dashed var(--text-gold);
+    padding: 15px; border-radius: 15px; color: var(--text-gold); margin-top: 25px;
+}
+
+/* --- ليدربورد نحيف لعرض أكبر عدد من المتسابقين --- */
+.leaderboard-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* تقليل الـ padding الرأسي من 15px إلى 8px لجعل الصف نحيفاً */
+    padding: 8px 15px; 
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px; /* تقليل الانحناء ليتناسب مع النحافة */
+    margin-bottom: 6px; /* تقليل المسافة بين الصفوف من 12px إلى 6px */
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.rank-num {
+    font-size: 1.4rem; /* تصغير الخط قليلاً ليتناسب مع الحجم الجديد */
+    font-weight: 800;
+    color: var(--accent-green);
+    width: 40px; 
+    text-align: right;
+}
+
+.player-name {
+    font-size: 1.1rem; /* خط متناسق */
+    font-weight: 700;
+    flex-grow: 1;
+    text-align: right;
+    color: var(--white);
+    /* منع الاسم من النزول لسطر جديد إذا كان طويلاً */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.points-badge {
+    background: var(--accent-green);
+    color: var(--primary-green);
+    /* تقليل مساحة البادج ليكون أنحف */
+    padding: 4px 12px; 
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    white-space: nowrap;
+}
+
+
+/* --- تعديل شبكة الإجابات في صفحة الريزولت --- */
+.results-grid {
+    display: grid;
+    /* هذا السطر يوزع الإجابات في صفوف تلقائية: كل بطاقة لا تقل عن 140px وتتمدد */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    width: 100%;
+    margin-top: 25px;
+}
+
+/* ستايل البطاقة (الإجابة) لتبدو كعنصر تفاعلي وليس مجرد نص */
+.answer-card {
+    background: rgba(255, 255, 255, 0.05); /* خلفية داكنة خفيفة */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* حدود بسيطة */
+    border-radius: 15px;
+    padding: 20px 10px;
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90px;
+    text-align: center;
+}
+
+/* تأثير عند اختيار البطاقة */
+.selected-card {
+    background: var(--accent-green) !important;
+    color: var(--primary-green) !important;
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    transform: scale(1.05);
+}
+
+/* حالة البطاقة المعطلة (للجاسوس أو بعد التصويت) */
+.card-disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+
+/* --- تعديل قائمة الحضور لتصبح مربعات شفافة موفرة للمساحة --- */
+.player-labels-container {
+    display: grid;
+    /* توزيع المربعات بشكل تلقائي في صفوف */
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+    gap: 12px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2); /* خلفية المنطقة أكثر شفافية */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.player-label-tag {
+    background: rgba(255, 255, 255, 0.05); /* نفس شفافية مربعات الإجابات */
+    border: 1px solid rgba(16, 185, 129, 0.2); /* حدود خضراء خفيفة */
+    padding: 15px 10px;
+    border-radius: 15px; /* حواف متناسقة مع مربعات الإجابات */
+    font-size: 0.95rem;
+    color: var(--white);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column; /* لجعل الأيقونة فوق الاسم إذا أردت أو بجانبه */
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 60px;
+}
+
+/* تأثير خفيف عند مرور الماوس على اسم اللاعب */
+.player-label-tag:hover {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+}
+
+
+/* --- ستايل كرت كشف الجاسوس في صفحة الريزولت --- */
+.spy-items-container {
+    display: grid;
+    /* توزيع الجواسيس في صفوف تلقائية */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.spy-item-card {
+    background: rgba(239, 68, 68, 0.1); /* خلفية حمراء شفافة لتدل على الجاسوس */
+    border: 1px solid rgba(239, 68, 68, 0.4); /* حدود حمراء متوهجة */
+    padding: 20px;
+    border-radius: 20px;
+    color: var(--white);
+    text-align: center;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+    animation: popIn 0.5s ease-out;
+}
+
+.spy-item-card strong {
+    color: #ef4444; /* تلوين اسم الجاسوس بالأحمر */
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.spy-answer-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+    margin-top: 5px;
+    font-style: italic;
+}
+/* --- 9. ستايل صناديق الأسئلة المطور --- */
+
+.question-container {
+    /* تغيير الخلفية لتناسب الشفافية والفخامة التي تستخدمها في الكانتينر */
+    background: rgba(255, 255, 255, 0.07);
+    border-right: 6px solid var(--accent-green); /* الخط الجانبي بلون موقعك الأخضر */
+    padding: 25px 20px;
+    border-radius: 18px;
+    margin: 25px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.question-label {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--accent-green); /* اللون الأخضر المميز */
+    margin-bottom: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.question-text {
+    font-size: 1.6rem;
+    color: var(--white); /* تغيير اللون للأبيض ليتناسب مع الخلفية الداكنة */
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* سمات خاصة تتغير حسب الدور برمجياً */
+.spy-theme-box { 
+    border-right-color: #ef4444 !important; /* أحمر للجاسوس */
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.citizen-theme-box { 
+    border-right-color: var(--accent-green) !important; /* أخضر للمواطن */
+    background: rgba(16, 185, 129, 0.1) !important;
+}
+
+/* تأثير التلاشي بعد إرسال الإجابة */
+.faded { 
+    opacity: 0.4; 
+    filter: blur(2px); 
+    pointer-events: none; 
+    transform: scale(0.98);
+}
+
+.timer-wrapper {
+    margin: 10px auto;
+    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--accent-green);
+}
+
+.timer-count {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-gold);
+    min-width: 40px;
+}
+
+.timer-icon { font-size: 1.2rem; }
+
+/* تأثير الوميض لما يقرب الوقت يخلص */
+.timer-low {
+    color: #ef4444 !important;
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+
+/* --- 8. الأنيميشن --- */
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+.animate-pop { animation: popIn 0.5s ease-out forwards; }
+
+@media (max-width: 480px) {
+    .container { padding: 30px 20px; }
+    .round-grid-modern { grid-template-columns: repeat(3, 1fr); }
+    .counter-number { font-size: 4rem; }
+}
