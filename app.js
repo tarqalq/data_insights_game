@@ -8,13 +8,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// --- 1. إعدادات قاعدة البيانات PostgreSQL ---
+// --- 1. إعدادات قاعدة البيانات PostgreSQL (متوافق مع Render) ---
 const pool = new Pool({
-    user: 'postgres',           
-    host: 'localhost',          
-    database: 'data_insights_db', 
-    password: 'tariq-123', 
-    port: 5432,                 
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false // ضروري جداً لبيئة Render
+    }
 });
 
 pool.connect((err) => {
@@ -79,7 +78,6 @@ io.on('connection', (socket) => {
     socket.emit('update_player_list', players);
     socket.emit('update_player_count', players.length);
 
-    // دالة مساعدة لإرسال التايمر بنظام وقت النهاية الموحد
     const emitTimer = (seconds) => {
         const endTime = Date.now() + (seconds * 1000);
         io.emit('start_countdown', endTime);
@@ -89,7 +87,6 @@ io.on('connection', (socket) => {
         emitTimer(seconds);
     });
 
-    // إرسال البيانات فور طلبها من صفحة الليدربورد
     socket.on('request_leaderboard', () => {
         socket.emit('update_leaderboard', { scores: playerScores, times: submissionTimes });
     });
@@ -170,7 +167,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submit_answer', (data) => {
-        submissionTimes[data.name] = Date.now(); // حفظ وقت الإجابة لكسر التعادل
+        submissionTimes[data.name] = Date.now();
         const player = players.find(p => p.name === data.name);
         submittedAnswers.push({ name: data.name, answer: data.answer, role: player ? player.role : 'general' });
         io.emit('answer_received_count', submittedAnswers.length);
@@ -262,12 +259,8 @@ io.on('connection', (socket) => {
     });
 });
 
-const { Pool } = require('pg');
-
-// تأكد أن الكود يقرأ الرابط من DATABASE_URL
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false // هذا السطر ضروري جداً لبيئة Render
-    }
+// --- 4. تشغيل السيرفر ---
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+    console.log(`✅ Server is running on port ${PORT}`);
 });
