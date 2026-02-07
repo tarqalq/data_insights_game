@@ -1,0 +1,148 @@
+/* تحسينات الجوال الشاملة */
+
+/* 1. ضبط الحاويات والشاشات الصغيرة */
+@media screen and (max-width: 768px) {
+
+    .container,
+    .container-wide {
+        width: 92% !important;
+        padding: 15px !important;
+        margin-top: 20px !important;
+    }
+
+    body {
+        padding-bottom: 30px;
+    }
+
+    /* تكبير النصوص للقراءة */
+    .main-title {
+        font-size: 2rem !important;
+    }
+
+    .sub-title-text {
+        font-size: 1rem !important;
+    }
+}
+
+/* 2. تحسينات لوحة الأدمن */
+@media screen and (max-width: 768px) {
+    .admin-controls-flex {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .admin-controls-flex button {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .round-grid-modern {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    .round-btn-modern {
+        padding: 10px !important;
+        font-size: 1rem !important;
+    }
+
+    .player-labels-container {
+        justify-content: center;
+    }
+}
+
+
+/* 3. تحسينات صفحة اللعبة */
+@media screen and (max-width: 768px) {
+    .question-text {
+        font-size: 1.3rem !important;
+        /* تصغير خط السؤال قليلاً */
+        line-height: 1.5 !important;
+    }
+
+    .question-container {
+        padding: 20px !important;
+    }
+
+    .input-standard {
+        font-size: 1.1rem !important;
+        padding: 12px 15px !important;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+}
+
+/* 4. تحسينات صفحة النتائج (الشبكة) */
+@media screen and (max-width: 768px) {
+    .results-grid {
+        grid-template-columns: 1fr !important;
+        /* عمود واحد للإجابات */
+        gap: 15px !important;
+    }
+
+    .answer-card {
+        padding: 15px !important;
+        font-size: 1.1rem !important;
+    }
+
+    .spy-reveal-card {
+        padding: 20px 15px !important;
+    }
+
+    .spy-item-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+/* 5. تحسينات الهيدر */
+@media screen and (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 0;
+    }
+
+    .header-left-side,
+    .header-right-side {
+        width: 100%;
+        justify-content: center !important;
+        text-align: center;
+    }
+
+    .logo-text {
+        font-size: 1.2rem !important;
+    }
+
+    .header-logo {
+        height: 60px !important;
+    }
+}
+
+/* 6. تحسينات الليدر بورد */
+@media screen and (max-width: 768px) {
+    .leaderboard-row {
+        padding: 12px !important;
+        gap: 10px !important;
+    }
+
+    .rank-num {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .player-name {
+        font-size: 1rem !important;
+    }
+
+    .points-badge {
+        padding: 5px 10px !important;
+        font-size: 0.9rem !important;
+    }
+}

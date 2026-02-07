@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .error-msg {
+            color: #ef4444;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="login-container animate-pop">
+        <div class="login-title">🔐 دخول الآدمن</div>
+
+        <% if (typeof error !=='undefined' && error) { %>
+            <div class="error-msg">❌ كلمة المرور غير صحيحة</div>
+            <% } %>
+
+                <form method="POST" action="/admin-login">
+                    <input type="password" name="password" class="login-input" placeholder="أدخل كلمة المرور" required
+                        autofocus>
+                    <button type="submit" class="login-btn">دخول 🚀</button>
+                </form>
+    </div>
+
+    <%- include('partials/footer') %>

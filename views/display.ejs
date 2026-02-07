@@ -1,0 +1,345 @@
+<%- include('partials/header') %>
+
+    <style>
+        /* إعدادات الصفحة العامة */
+        body {
+            background-color: var(--primary-green);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* المحتوى الرئيسي ملتصق بالهيدر */
+        .display-main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        /* الشاشات تملأ 80% من العرض (10% هامش يمين ويسار) */
+        #setup-screen,
+        #progress-screen,
+        #reveal-screen,
+        #spy-screen,
+        #leaderboard-screen {
+            width: 80%;
+            margin: 0 auto;
+            display: none;
+        }
+
+        /* --- استرجاع ستايل الأسئلة الأصلي (Question Highlight) --- */
+        .question-highlight {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px 45px;
+            border-radius: 50px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 0 auto 30px auto;
+            border: 2px solid #f59e0b;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* التايمر العائم */
+        .display-timer {
+            position: fixed;
+            top: 130px;
+            left: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 35px;
+            border-radius: 100px;
+            border: 3px solid var(--accent-green);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+        }
+
+        .timer-val {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--accent-green);
+        }
+
+        /* العناوين والعدادات الضخمة */
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .counter-large {
+            font-size: 10rem;
+            color: var(--accent-green);
+            font-weight: 900;
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        /* شبكة الأسماء الموزعة */
+        #participant-canvas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            border: 1px solid var(--card-border);
+        }
+
+        /* شبكة الإجابات الموزعة */
+        .reveal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .answer-card-display {
+            background: white;
+            color: var(--primary-green);
+            padding: 30px;
+            border-radius: 20px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: popIn 0.5s ease-out;
+        }
+
+        /* ليدربورد عريض وفخم */
+        .leaderboard-display-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .leader-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .leader-rank {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-green);
+            width: 80px;
+            text-align: right;
+        }
+
+        .leader-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            flex-grow: 1;
+            text-align: right;
+        }
+
+        .leader-points {
+            font-size: 2rem;
+            background: var(--accent-green);
+            color: #000;
+            padding: 8px 30px;
+            border-radius: 50px;
+            font-weight: 900;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+
+    <div id="displayTimerArea" class="display-timer">
+        <span style="font-size: 1.8rem;">⏳</span>
+        <span id="displayTimerVal" class="timer-val">0</span>
+    </div>
+
+    <main class="display-main-content">
+        <div id="setup-screen" class="animate-pop" style="display: block;">
+            <h1 class="section-title">مجتمع رؤى البيانات</h1>
+            <div class="counter-large" id="mainCount">0</div>
+            <p style="font-size: 2rem; opacity: 0.8;">مشارك متصل الآن</p>
+            <div id="participant-canvas"></div>
+        </div>
+
+        <div id="progress-screen" class="animate-pop">
+            <h1 class="section-title">أرسلوا إجاباتكم الآن! ✍️</h1>
+            <div class="counter-large" id="answersCount">0</div>
+            <p style="font-size: 2.5rem;">من أصل <span id="totalExpected">0</span> مشارك</p>
+        </div>
+
+        <div id="reveal-screen" class="animate-pop">
+            <h1 class="section-title">لوحة الإجابات 🧐</h1>
+            <div id="generalQuestionDisplay" class="question-highlight"></div>
+            <div class="reveal-grid" id="answersGrid"></div>
+        </div>
+
+        <div id="spy-screen" class="animate-pop">
+            <h1 class="section-title" style="color: #ef4444; font-size: 5rem;">كشف المستور! 🕵️‍♂️</h1>
+            <div id="spyQuestionDisplay" class="question-highlight"
+                style="background: #fee2e2; color: #991b1b; border-color: #ef4444;"></div>
+            <div id="spyList" style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;"></div>
+        </div>
+
+        <div id="leaderboard-screen" class="animate-pop">
+            <h1 class="section-title" style="color: var(--accent-green); font-size: 4.5rem; margin-bottom: 40px;">🏆
+                لوحة المتصدرين</h1>
+            <div id="leaderboardList" class="leaderboard-display-list"></div>
+        </div>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let timerInterval;
+
+        // منطق التايمر الموحد
+        socket.on('start_countdown', (endTime) => {
+            const area = document.getElementById('displayTimerArea');
+            const val = document.getElementById('displayTimerVal');
+            clearInterval(timerInterval);
+            area.style.display = 'flex';
+            timerInterval = setInterval(() => {
+                const timeLeft = Math.ceil((endTime - Date.now()) / 1000);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    val.innerText = "0";
+                    setTimeout(() => { area.style.display = 'none'; }, 2000);
+                    return;
+                }
+                val.innerText = timeLeft;
+                if (timeLeft <= 5) area.classList.add('timer-low');
+                else area.classList.remove('timer-low');
+            }, 1000);
+        });
+
+        socket.on('update_player_count', (count) => {
+            document.getElementById('mainCount').innerText = count;
+            document.getElementById('totalExpected').innerText = count;
+        });
+
+        socket.on('update_player_list', (players) => {
+            document.getElementById('participant-canvas').innerHTML =
+                players.map(p => `<div class="player-card">${p.name}</div>`).join('');
+        });
+
+        socket.on('game_started_display', () => {
+            hideAll();
+            document.getElementById('progress-screen').style.display = 'block';
+        });
+
+        socket.on('answer_received_count', (count) => {
+            document.getElementById('answersCount').innerText = count;
+        });
+
+        socket.on('reveal_all_answers', (data) => {
+            hideAll();
+            document.getElementById('reveal-screen').style.display = 'block';
+            document.getElementById('generalQuestionDisplay').innerText = "سؤال الجمهور: " + data.generalQuestion;
+            const grid = document.getElementById('answersGrid');
+            grid.style.display = 'grid';
+            grid.innerHTML = data.answers
+                .sort(() => 0.5 - Math.random())
+                .map(item => `<div class="answer-card-display">${item.answer}</div>`)
+                .join('');
+        });
+
+        socket.on('final_spy_reveal', (data) => {
+            hideAll();
+            document.getElementById('displayTimerArea').style.display = 'none';
+            document.getElementById('spy-screen').style.display = 'block';
+            const totalVotes = data.totalVotes || 0;
+            document.getElementById('spyQuestionDisplay').innerText = "سؤال الجاسوس: " + data.spyQuestion;
+            document.getElementById('spyList').innerHTML = data.spies.map(spy => `
+            <div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 30px; min-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px 30px; border-radius: 20px; margin-bottom: 25px; display: inline-block;">
+                    <span style="font-size: 2.2rem;">👤 الجاسوس:</span> 
+                    <strong style="color: #ef4444; font-size: 2.5rem;">${spy.name}</strong>
+                </div>
+                
+                <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 30px;">
+                        <span style="background: rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 20px; font-size: 1.8rem; color: #fff;">
+                        🗳️ أصوات ضده: ${spy.votes} / ${totalVotes}
+                    </span>
+                    <span style="background: rgba(255,255,255,0.1); padding: 10px 25px; border-radius: 20px; font-size: 1.8rem; font-weight: bold; color: #fff;">
+                        💎 كسب: ${spy.earned || 0}
+                    </span>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 25px;">
+                    <div style="font-size: 1.8rem; color: #e5e7eb; margin-bottom: 10px;">💬 الإجابة:</div>
+                    <div style="font-size: 2.5rem; color: #fff; font-weight: bold;">"${spy.answer}"</div>
+                </div>
+            </div>
+        `).join('');
+        });
+
+        socket.on('nav_to_leaderboard', () => {
+            socket.emit('request_leaderboard');
+        });
+
+        socket.on('update_leaderboard', (data) => {
+            hideAll();
+            document.getElementById('leaderboard-screen').style.display = 'block';
+            const sorted = Object.entries(data.scores).sort((a, b) => b[1] - a[1]);
+            document.getElementById('leaderboardList').innerHTML = sorted.map(([name, score], index) => `
+            <div class="leader-row" style="animation-delay: ${index * 0.1}s">
+                <div class="leader-rank">#${index + 1}</div>
+                <div class="leader-name">${name}</div>
+                <div class="leader-points">${score} نقطة</div>
+            </div>
+        `).join('');
+        });
+
+        socket.on('back_to_lobby', () => {
+            hideAll();
+            document.getElementById('setup-screen').style.display = 'block';
+        });
+
+        function hideAll() {
+            ['setup-screen', 'progress-screen', 'reveal-screen', 'spy-screen', 'leaderboard-screen'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+        }
+    </script>
+
+    <%- include('partials/footer') %>

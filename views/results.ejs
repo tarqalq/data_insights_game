@@ -1,0 +1,249 @@
+<%- include('partials/header') %>
+
+    <div class="container container-wide animate-pop">
+        <h2 class="main-title">مرحلة التصويت 🕵️‍♂️</h2>
+
+        <div id="timerArea" class="timer-wrapper" style="display: none; justify-content: center; margin-bottom: 20px;">
+            <span class="timer-icon">⏳</span>
+            <span id="timerDisplay" class="timer-count">0</span>
+        </div>
+
+        <div id="roleAlertHeader" style="margin-bottom: 20px;"></div>
+
+        <div id="roleHintArea" class="role-hint" style="display: none;"></div>
+
+        <p id="instructionText" class="instruction-text">انتظر كشف الإجابات...</p>
+
+        <div id="answersGrid" class="results-grid"></div>
+
+        <button id="submitVoteBtn" class="btn-primary btn-submit-vote" style="display: none;"
+            onclick="submitFinalVote()">
+            صوّت الآن 🗳️
+        </button>
+
+        <div id="selectionFeedback" class="status-msg" style="display: none;">
+            <p>✅ تم التصويت! انتظر النتيجة...</p>
+        </div>
+
+        <div id="finalResultArea" class="spy-reveal-card" style="display: none;">
+            <h3 class="spy-reveal-title">النتيجة! 🕵️‍♂️</h3>
+
+            <div class="question-container spy-reveal-box">
+                <span class="question-label">سؤال الجاسوس:</span>
+                <p id="spyQuestionTitle" class="question-text"></p>
+            </div>
+
+            <div id="spyList" class="spy-items-container"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const answersGrid = document.getElementById('answersGrid');
+        const submitVoteBtn = document.getElementById('submitVoteBtn');
+        const selectionFeedback = document.getElementById('selectionFeedback');
+        const finalResultArea = document.getElementById('finalResultArea');
+        const spyList = document.getElementById('spyList');
+        const roleHintArea = document.getElementById('roleHintArea');
+        const roleAlertHeader = document.getElementById('roleAlertHeader');
+        const instructionText = document.getElementById('instructionText');
+        const timerArea = document.getElementById('timerArea');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        // اسم اللاعب يأتي من السيرفر عبر الـ cookies
+        const playerName = "<%= playerName %>";
+        const playerRole = sessionStorage.getItem('playerRole');
+
+        let isVoted = false;
+        let maxSpyCount = 1;
+        let selectedPlayers = [];
+        let timerInterval;
+
+        // التعامل مع أخطاء الاتصال - المصادقة تتم عبر الـ cookies
+        socket.on('connect_error', (err) => {
+            if (err.message === 'Authentication error') {
+                if (!window.location.search.includes('error=auth')) {
+                    window.location.replace('/?error=auth');
+                }
+            }
+        });
+
+        socket.on('start_countdown', (endTime) => {
+            if (!timerArea || !timerDisplay) return;
+            clearInterval(timerInterval);
+            timerArea.style.display = 'inline-flex';
+            timerInterval = setInterval(() => {
+                const timeLeft = Math.ceil((endTime - Date.now()) / 1000);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.innerText = "0";
+                    return;
+                }
+                timerDisplay.innerText = timeLeft;
+                if (timeLeft <= 5) timerDisplay.classList.add('timer-low');
+            }, 1000);
+        });
+
+        socket.on('reveal_spy_count_for_voting', (count) => {
+            maxSpyCount = count;
+        });
+
+        socket.on('reveal_all_answers', (data) => {
+            if (!data || !data.answers || data.answers.length === 0) return;
+            renderAnswers(data.answers);
+            roleHintArea.style.display = 'block';
+
+            if (playerRole === 'special') {
+                isVoted = true;
+                // تنبيه الجاسوس شفافية 80% مع إجبار اللون
+                roleAlertHeader.innerHTML = `
+                <div class="spy-role-alert">
+                    <div class="spy-icon-large">🕵️‍♂️</div>
+                    <div>
+                        <div class="spy-title-text">أنت الجاسوس!</div>
+                        <div class="spy-subtitle-text">اندمج مع الآخرين ولا تكشف نفسك</div>
+                    </div>
+                </div>`;
+                instructionText.display = "none";
+
+                // سؤال الجمهور للجاسوس
+                roleHintArea.innerHTML = `
+                <div class="question-container spy-theme-box-modern">
+                    <span class="question-label">سؤال الجمهور هو:</span>
+                    <p class="question-text">${data.generalQuestion}</p>
+                </div>`;
+            } else {
+                roleAlertHeader.innerHTML = "";
+                instructionText.innerText = `اختر ${maxSpyCount} إجابات مشبوهة:`;
+                roleHintArea.innerHTML = `
+                <div class="question-container">
+                    <span class="question-label">🔍 مهمة البحث عن سؤال الجاسوس:</span>
+                    <p class="question-text">${data.spyQuestion}</p>
+                </div>`;
+            }
+        });
+
+        function renderAnswers(answers) {
+            answersGrid.innerHTML = '';
+            const otherAnswers = answers.filter(item => item.name !== playerName);
+            otherAnswers.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'answer-card';
+                card.innerText = item.answer;
+                card.setAttribute('data-player-name', item.name);
+                card.onclick = () => { handleSelect(card, item.name); };
+                if (playerRole === 'special') card.classList.add('card-disabled');
+                answersGrid.appendChild(card);
+            });
+        }
+
+        function handleSelect(card, targetPlayer) {
+            if (isVoted || playerRole === 'special') return;
+            if (selectedPlayers.includes(targetPlayer)) {
+                selectedPlayers = selectedPlayers.filter(p => p !== targetPlayer);
+                card.classList.remove('selected-card');
+            } else {
+                if (selectedPlayers.length < maxSpyCount) {
+                    selectedPlayers.push(targetPlayer);
+                    card.classList.add('selected-card');
+                }
+            }
+            updateCardsUI();
+            submitVoteBtn.style.display = selectedPlayers.length === maxSpyCount ? 'block' : 'none';
+        }
+
+        function updateCardsUI() {
+            document.querySelectorAll('.answer-card').forEach(c => {
+                const cName = c.getAttribute('data-player-name');
+                if (selectedPlayers.length === maxSpyCount) {
+                    if (!selectedPlayers.includes(cName)) {
+                        c.style.opacity = "0.4";
+                        c.style.pointerEvents = "none";
+                    } else {
+                        c.style.opacity = "1";
+                        c.style.pointerEvents = "auto";
+                    }
+                } else {
+                    c.style.opacity = "1";
+                    c.style.pointerEvents = "auto";
+                }
+            });
+        }
+
+        function submitFinalVote() {
+            if (selectedPlayers.length !== maxSpyCount || isVoted) return;
+            selectedPlayers.forEach(pName => {
+                socket.emit('submit_vote', { voter: playerName, votedAnswer: pName });
+            });
+            isVoted = true;
+            submitVoteBtn.style.display = 'none';
+            selectionFeedback.style.display = 'block';
+        }
+
+        socket.on('final_spy_reveal', (data) => {
+            clearInterval(timerInterval);
+            answersGrid.style.display = 'none';
+            submitVoteBtn.style.display = 'none';
+            selectionFeedback.style.display = 'none';
+            roleHintArea.style.display = 'none';
+            roleAlertHeader.style.display = 'none';
+            instructionText.style.display = 'none';
+            timerArea.style.display = 'none';
+
+            finalResultArea.style.display = 'block';
+            document.getElementById('spyQuestionTitle').innerText = data.spyQuestion;
+
+            const totalVotes = data.totalVotes || 0;
+            spyList.innerHTML = data.spies.map(spy => `
+            <div class="spy-item-card" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: center;">
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 12px; margin-bottom: 10px; display: inline-block;">
+                    👤 الجاسوس: <strong style="color: #ef4444; font-size: 1.1rem;">${spy.name}</strong>
+                </div>
+                
+                <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <span style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 15px; font-size: 0.9rem;">
+                        🗳️ أصوات ضده: <strong>${spy.votes} / ${totalVotes}</strong>
+                    </span>
+                    <span style="background: rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; border-radius: 15px; font-size: 0.9rem; font-weight: bold;">
+                        💎 كسب: <strong>${spy.earned || 0}</strong>
+                    </span>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; font-size: 1rem; color: #e5e7eb; margin-top: 5px;">
+                    💬 إجابته: 
+                    <div class="spy-answer-text" style="color: #fff; font-weight: bold; margin-top: 5px; font-size: 1.1rem;">"${spy.answer}"</div>
+                </div>
+
+            </div>`).join('');
+        });
+
+        socket.on('back_to_lobby', () => {
+            clearInterval(timerInterval);
+            sessionStorage.clear();
+            window.location.replace('/lobby');
+        });
+
+        socket.on('nav_to_leaderboard', () => {
+            clearInterval(timerInterval);
+            window.location.replace('/leaderboard');
+        });
+
+        socket.on('force_logout', () => {
+            clearInterval(timerInterval);
+            localStorage.removeItem('data_insights_name');
+            sessionStorage.clear();
+            window.location.replace('/');
+        });
+    </script>
+
+    <style>
+        /* لضمان حدة النص الأبيض */
+        .question-text {
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+
+    <%- include('partials/footer') %>

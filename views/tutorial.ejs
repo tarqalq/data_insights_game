@@ -1,0 +1,183 @@
+<%- include('partials/header') %>
+
+    <style>
+        .tutorial-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tutorial-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+        }
+
+        .tutorial-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tutorial-icon {
+            font-size: 2.5rem;
+        }
+
+        .tutorial-content {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .tutorial-content ul {
+            margin: 15px 0;
+            padding-right: 25px;
+        }
+
+        .tutorial-content li {
+            margin: 10px 0;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin: 0 5px;
+        }
+
+        .role-citizen {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--accent-green);
+        }
+
+        .role-spy {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: #ef4444;
+        }
+
+        .start-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+
+    <div class="tutorial-container animate-pop">
+        <h1 style="text-align: center; font-size: 3rem; margin-bottom: 40px; color: var(--accent-green);">
+            📚 كيف تلعب؟
+        </h1>
+
+        <div class="tutorial-card">
+            <div class="tutorial-title">
+                <span class="tutorial-icon">🎯</span>
+                <span>الهدف من اللعبة</span>
+            </div>
+            <div class="tutorial-content">
+                <p>اللعبة تعتمد على نظام الأسئلة والأجوبة مع وجود "جواسيس" يحاولون الاندماج مع المواطنين.</p>
+                <ul>
+                    <li><strong>المواطنون:</strong> يحاولون اكتشاف الجواسيس من خلال إجاباتهم</li>
+                    <li><strong>الجواسيس:</strong> يحاولون الاندماج وعدم الكشف عن هويتهم</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tutorial-card">
+            <div class="tutorial-title">
+                <span class="tutorial-icon">👥</span>
+                <span>الأدوار</span>
+            </div>
+            <div class="tutorial-content">
+                <p>في كل جولة، سيتم توزيع الأدوار بشكل عشوائي:</p>
+                <ul>
+                    <li><span class="role-badge role-citizen">مواطن</span> - يحصل على السؤال العام</li>
+                    <li><span class="role-badge role-spy">جاسوس</span> - يحصل على سؤال مختلف</li>
+                </ul>
+                <p><strong>ملاحظة:</strong> عدد الجواسيس = (عدد اللاعبين - 1) ÷ 10 + 1</p>
+            </div>
+        </div>
+
+        <div class="tutorial-card">
+            <div class="tutorial-title">
+                <span class="tutorial-icon">🎮</span>
+                <span>خطوات اللعب</span>
+            </div>
+            <div class="tutorial-content">
+                <ol style="padding-right: 25px;">
+                    <li><strong>التسجيل:</strong> أدخل اسمك الحقيقي للانضمام</li>
+                    <li><strong>الانتظار:</strong> انتظر في اللوبي حتى يبدأ المنظم اللعبة</li>
+                    <li><strong>الإجابة:</strong> ستحصل على سؤال - أجب عليه بصدق</li>
+                    <li><strong>التصويت:</strong> بعد رؤية جميع الإجابات، صوّت على من تظن أنهم الجواسيس</li>
+                    <li><strong>النتائج:</strong> شاهد من كان الجاسوس واكسب النقاط!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="tutorial-card">
+            <div class="tutorial-title">
+                <span class="tutorial-icon">🏆</span>
+                <span>نظام النقاط</span>
+            </div>
+            <div class="tutorial-content">
+                <p><strong>للمواطنين:</strong></p>
+                <ul>
+                    <li>+1 نقطة لكل جاسوس تصوت عليه بشكل صحيح</li>
+                </ul>
+                <p><strong>للجواسيس:</strong></p>
+                <ul>
+                    <li>نقاط أساسية = عدد الجواسيس في الجولة</li>
+                    <li>تُخصم نقاط بناءً على عدد الأصوات ضدك</li>
+                    <li>كلما اندمجت أكثر، كسبت نقاط أكثر!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tutorial-card">
+            <div class="tutorial-title">
+                <span class="tutorial-icon">💡</span>
+                <span>نصائح للفوز</span>
+            </div>
+            <div class="tutorial-content">
+                <ul>
+                    <li><strong>كن صادقاً:</strong> إذا كنت مواطناً، أجب بصدق لتسهيل اكتشاف الجواسيس</li>
+                    <li><strong>كن ذكياً:</strong> إذا كنت جاسوساً، حاول أن تكون إجابتك منطقية ومشابهة للآخرين</li>
+                    <li><strong>راقب الإجابات:</strong> ابحث عن الإجابات الغريبة أو غير المنطقية</li>
+                    <li><strong>استخدم الوقت:</strong> لديك وقت محدد للإجابة والتصويت</li>
+                </ul>
+            </div>
+        </div>
+
+        <button class="start-btn" onclick="window.location.href='/'">
+            ابدأ اللعب الآن! 🚀
+        </button>
+    </div>
+
+    <%- include('partials/footer') %>

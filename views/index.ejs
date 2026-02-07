@@ -1,0 +1,217 @@
+<%- include('partials/header') %>
+
+    <style>
+        .tutorial-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+        }
+
+        .tutorial-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tutorial-icon {
+            font-size: 1.8rem;
+        }
+
+        .tutorial-content {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .tutorial-content ul,
+        .tutorial-content ol {
+            margin: 10px 0;
+            padding-right: 20px;
+        }
+
+        .tutorial-content li {
+            margin: 8px 0;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .role-citizen {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--accent-green);
+        }
+
+        .role-spy {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: #ef4444;
+        }
+    </style>
+
+    <div class="container animate-pop">
+        <h2 class="main-title">🎮 لعبة الجاسوس</h2>
+        <p class="sub-title-text">اكتشف من بينكم الجاسوس!</p>
+
+        <hr class="divider">
+
+        <!-- قسم التسجيل -->
+        <div id="joinCard" class="card">
+            <form id="joinForm" method="POST" action="/login">
+                <input type="text" id="playerName" name="name" class="input-standard" placeholder="أدخل اسمك هنا..."
+                    required autocomplete="off">
+                <button type="submit" id="joinBtn" class="btn-primary">ابدأ اللعب 🚀</button>
+            </form>
+        </div>
+
+        <% if (typeof error !=='undefined' && error) { %>
+            <script>
+                // نستخدم setTimeout لضمان تحميل SweetAlert
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'تنبيه',
+                        text: '<%= error %>',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }, 500);
+            </script>
+            <% } %>
+
+                <!-- التوتريال الكامل -->
+                <h3 style="text-align: center; font-size: 1.8rem; margin: 30px 0 20px; color: var(--accent-green);">📚
+                    كيف تلعب؟</h3>
+
+                <div class="tutorial-card">
+                    <div class="tutorial-title">
+                        <span class="tutorial-icon">🎯</span>
+                        <span>الهدف من اللعبة</span>
+                    </div>
+                    <div class="tutorial-content">
+                        <p>اللعبة تعتمد على نظام الأسئلة والأجوبة مع وجود "جواسيس" يحاولون الاندماج مع المواطنين.</p>
+                        <ul>
+                            <li><strong>المواطنون:</strong> يحاولون اكتشاف الجواسيس من خلال إجاباتهم</li>
+                            <li><strong>الجواسيس:</strong> يحاولون الاندماج وعدم الكشف عن هويتهم</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="tutorial-title">
+                        <span class="tutorial-icon">👥</span>
+                        <span>الأدوار</span>
+                    </div>
+                    <div class="tutorial-content">
+                        <p>في كل جولة، سيتم توزيع الأدوار بشكل عشوائي:</p>
+                        <ul>
+                            <li><span class="role-badge role-citizen">مواطن</span> - يحصل على السؤال العام</li>
+                            <li><span class="role-badge role-spy">جاسوس</span> - يحصل على سؤال مختلف</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="tutorial-title">
+                        <span class="tutorial-icon">🎮</span>
+                        <span>خطوات اللعب</span>
+                    </div>
+                    <div class="tutorial-content">
+                        <ol>
+                            <li><strong>التسجيل:</strong> أدخل اسمك للانضمام</li>
+                            <li><strong>الانتظار:</strong> انتظر حتى يبدأ المنظم اللعبة</li>
+                            <li><strong>الإجابة:</strong> أجب على السؤال بصدق</li>
+                            <li><strong>التصويت:</strong> صوّت على من تظن أنهم الجواسيس</li>
+                            <li><strong>النتائج:</strong> شاهد من كان الجاسوس!</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="tutorial-title">
+                        <span class="tutorial-icon">🏆</span>
+                        <span>نظام النقاط</span>
+                    </div>
+                    <div class="tutorial-content">
+                        <p><strong>للمواطنين:</strong></p>
+                        <ul>
+                            <li>+1 نقطة لكل جاسوس تصوت عليه بشكل صحيح</li>
+                        </ul>
+                        <p><strong>للجواسيس:</strong></p>
+                        <ul>
+                            <li>كلما اندمجت أكثر ولم يتم اكتشافك، كسبت نقاط أكثر!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tutorial-card">
+                    <div class="tutorial-title">
+                        <span class="tutorial-icon">💡</span>
+                        <span>نصائح للفوز</span>
+                    </div>
+                    <div class="tutorial-content">
+                        <ul>
+                            <li><strong>كن صادقاً:</strong> إذا كنت مواطناً، أجب بصدق</li>
+                            <li><strong>كن ذكياً:</strong> إذا كنت جاسوساً، حاول الاندماج</li>
+                            <li><strong>راقب الإجابات:</strong> ابحث عن الإجابات الغريبة</li>
+                        </ul>
+                    </div>
+                </div>
+    </div>
+
+    <script>
+        const joinForm = document.getElementById('joinForm');
+        const playerNameInput = document.getElementById('playerName');
+        const joinBtn = document.getElementById('joinBtn');
+
+        playerNameInput.focus();
+
+        joinForm.addEventListener('submit', (e) => {
+            const name = playerNameInput.value.trim();
+            if (!name || name.length < 2) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: 'الرجاء إدخال اسم صحيح (حرفين على الأقل)',
+                    confirmButtonColor: '#22c55e'
+                });
+            } else {
+                joinBtn.disabled = true;
+                joinBtn.innerText = 'جاري الدخول...';
+            }
+        });
+
+        // التحقق من أخطاء الاتصال القادمة من الصفحات الأخرى
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'auth') {
+            Swal.fire({
+                icon: 'error',
+                title: 'تنبيه',
+                text: 'انتهت جلستك، الرجاء الدخول مجدداً',
+                confirmButtonColor: '#ef4444'
+            }).then(() => {
+                // تنظيف الرابط
+                window.history.replaceState({}, document.title, "/");
+            });
+        }
+    </script>
+
+    <%- include('partials/footer') %>

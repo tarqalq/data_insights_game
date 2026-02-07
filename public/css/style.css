@@ -1,0 +1,821 @@
+/* --- 1. الإعدادات العامة والخطوط --- */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+
+/* ملاحظة: المتغيرات الآن في ملف themes.css */
+/* هذا الملف يستخدم المتغيرات المعرفة هناك */
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--primary-bg);
+    background-image: url('/Background_game.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 140px 0 40px 0;
+    direction: rtl;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* تحسين الخلفية في الوضع الفاتح */
+[data-theme="light"] body {
+    background-blend-mode: overlay;
+    background-color: rgba(240, 253, 244, 0.95);
+}
+
+/* --- 2. الهيدر واللوجو --- */
+.main-header {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+}
+
+.header-logo {
+    height: 100px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.logo-text {
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: white;
+    text-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+.main-footer {
+    width: 100%;
+    padding: 25px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+
+    /* هذا السطر يدفعه لأسفل الصفحة تماماً */
+    margin-top: auto;
+
+
+    backdrop-filter: blur(5px);
+}
+
+/* --- 3. الكارد الأساسي (Container) --- */
+.container {
+    width: 92%;
+    max-width: 500px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 45px 35px;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), var(--shadow-glow);
+    text-align: center;
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+}
+
+.container-wide {
+    max-width: 900px;
+}
+
+/* لزيادة عرض لوحة الآدمن */
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+}
+
+/* --- 4. ستايلات الآدمن (الجولات والعداد والأسماء) --- */
+
+/* عداد الآدمن - أصغر من اللوبي بطلبك */
+.counter-glow-wrapper-admin {
+    display: inline-block;
+    padding: 8px 30px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    margin: 15px 0;
+}
+
+.counter-number-admin {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--accent-green);
+    text-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+    line-height: 1;
+}
+
+/* شبكة الجولات - هنا التحكم في توزيع الأزرار */
+.round-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 أزرار في الصف */
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* الزر نفسه - هنا تكبره وتصغره بطلبك */
+.round-btn-modern {
+    padding: 22px;
+    /* كبرت المسافة الداخلية ليكون الزر ضخماً */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 15px;
+    font-size: 1.5rem;
+    /* كبرت حجم الرقم داخل الزر */
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.round-btn-modern:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--accent-green);
+}
+
+.round-btn-modern.active-round {
+    background: var(--accent-green);
+    color: var(--primary-green);
+    border-color: var(--accent-green);
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+}
+
+/* ليبلات الأسماء في الآدمن */
+.player-labels-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+}
+
+.player-label-tag {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 1rem;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+/* --- 5. ستايلات اللوبي (النبض والعداد الضخم) --- */
+.status-indicator-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pulse-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 50%;
+    animation: pingPulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.pulse-circle-inner {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    background: rgba(16, 185, 129, 0.4);
+    border-radius: 50%;
+    animation: innerPulse 2s ease-in-out infinite;
+}
+
+.status-icon {
+    font-style: normal;
+    font-size: 2rem;
+    z-index: 2;
+}
+
+@keyframes pingPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+@keyframes innerPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+.counter-glow-wrapper {
+    display: inline-block;
+    padding: 15px 40px;
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: 25px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    margin: 20px 0;
+}
+
+.counter-number {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--accent-green);
+    text-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    line-height: 1;
+    display: block;
+}
+
+/* --- 6. الأزرار العامة والمدخلات --- */
+.btn-primary {
+    background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 18px 30px;
+    border-radius: 15px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    margin: 10px 0;
+    transition: 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+}
+
+/* ألوان أزرار التحكم الإضافية */
+.btn-action-blue {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+}
+
+.btn-action-purple {
+    background: linear-gradient(135deg, #4c1d95, #8b5cf6);
+}
+
+.btn-action-orange {
+    background: linear-gradient(135deg, #7c2d12, #f97316);
+}
+
+input.input-standard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 15px;
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+    width: 100%;
+}
+
+/* --- 7. التنبيهات والليدربورد --- */
+.warning-box {
+    background: rgba(253, 224, 71, 0.1);
+    border: 1px dashed var(--text-gold);
+    padding: 15px;
+    border-radius: 15px;
+    color: var(--text-gold);
+    margin-top: 25px;
+}
+
+/* --- ليدربورد نحيف لعرض أكبر عدد من المتسابقين --- */
+.leaderboard-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* تقليل الـ padding الرأسي من 15px إلى 8px لجعل الصف نحيفاً */
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    /* تقليل الانحناء ليتناسب مع النحافة */
+    margin-bottom: 6px;
+    /* تقليل المسافة بين الصفوف من 12px إلى 6px */
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.rank-num {
+    font-size: 1.4rem;
+    /* تصغير الخط قليلاً ليتناسب مع الحجم الجديد */
+    font-weight: 800;
+    color: var(--accent-green);
+    width: 40px;
+    text-align: right;
+}
+
+.player-name {
+    font-size: 1.1rem;
+    /* خط متناسق */
+    font-weight: 700;
+    flex-grow: 1;
+    text-align: right;
+    color: var(--white);
+    /* منع الاسم من النزول لسطر جديد إذا كان طويلاً */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.points-badge {
+    background: var(--accent-green);
+    color: var(--primary-green);
+    /* تقليل مساحة البادج ليكون أنحف */
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    white-space: nowrap;
+}
+
+
+/* --- تعديل شبكة الإجابات في صفحة الريزولت --- */
+.results-grid {
+    display: grid;
+    /* هذا السطر يوزع الإجابات في صفوف تلقائية: كل بطاقة لا تقل عن 140px وتتمدد */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    width: 100%;
+    margin-top: 25px;
+}
+
+/* ستايل البطاقة (الإجابة) لتبدو كعنصر تفاعلي وليس مجرد نص */
+.answer-card {
+    background: rgba(255, 255, 255, 0.05);
+    /* خلفية داكنة خفيفة */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* حدود بسيطة */
+    border-radius: 15px;
+    padding: 20px 10px;
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90px;
+    text-align: center;
+}
+
+/* تأثير عند اختيار البطاقة */
+.selected-card {
+    background: var(--accent-green) !important;
+    color: var(--primary-green) !important;
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    transform: scale(1.05);
+}
+
+/* حالة البطاقة المعطلة (للجاسوس أو بعد التصويت) */
+.card-disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+
+/* --- تعديل قائمة الحضور لتصبح مربعات شفافة موفرة للمساحة --- */
+.player-labels-container {
+    display: grid;
+    /* توزيع المربعات بشكل تلقائي في صفوف */
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    /* خلفية المنطقة أكثر شفافية */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.player-label-tag {
+    background: rgba(255, 255, 255, 0.05);
+    /* نفس شفافية مربعات الإجابات */
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    /* حدود خضراء خفيفة */
+    padding: 15px 10px;
+    border-radius: 15px;
+    /* حواف متناسقة مع مربعات الإجابات */
+    font-size: 0.95rem;
+    color: var(--white);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    /* لجعل الأيقونة فوق الاسم إذا أردت أو بجانبه */
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 60px;
+}
+
+/* تأثير خفيف عند مرور الماوس على اسم اللاعب */
+.player-label-tag:hover {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+}
+
+
+/* --- ستايل كرت كشف الجاسوس في صفحة الريزولت --- */
+.spy-items-container {
+    display: grid;
+    /* توزيع الجواسيس في صفوف تلقائية */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.spy-item-card {
+    background: rgba(239, 68, 68, 0.1);
+    /* خلفية حمراء شفافة لتدل على الجاسوس */
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    /* حدود حمراء متوهجة */
+    padding: 20px;
+    border-radius: 20px;
+    color: var(--white);
+    text-align: center;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+    animation: popIn 0.5s ease-out;
+}
+
+.spy-item-card strong {
+    color: #ef4444;
+    /* تلوين اسم الجاسوس بالأحمر */
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.spy-answer-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* --- 9. ستايل صناديق الأسئلة المطور --- */
+
+.question-container {
+    /* تغيير الخلفية لتناسب الشفافية والفخامة التي تستخدمها في الكانتينر */
+    background: rgba(255, 255, 255, 0.07);
+    border-right: 6px solid var(--accent-green);
+    /* الخط الجانبي بلون موقعك الأخضر */
+    padding: 25px 20px;
+    border-radius: 18px;
+    margin: 25px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.question-label {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--accent-green);
+    /* اللون الأخضر المميز */
+    margin-bottom: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.question-text {
+    font-size: 1.6rem;
+    color: var(--white);
+    /* تغيير اللون للأبيض ليتناسب مع الخلفية الداكنة */
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* سمات خاصة تتغير حسب الدور برمجياً */
+.spy-theme-box {
+    border-right-color: #ef4444 !important;
+    /* أحمر للجاسوس */
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.citizen-theme-box {
+    border-right-color: var(--accent-green) !important;
+    /* أخضر للمواطن */
+    background: rgba(16, 185, 129, 0.1) !important;
+}
+
+/* تأثير التلاشي بعد إرسال الإجابة */
+.faded {
+    opacity: 0.4;
+    filter: blur(2px);
+    pointer-events: none;
+    transform: scale(0.98);
+}
+
+.timer-wrapper {
+    margin: 10px auto;
+    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--accent-green);
+}
+
+.timer-count {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-gold);
+    min-width: 40px;
+}
+
+.timer-icon {
+    font-size: 1.2rem;
+}
+
+/* تأثير الوميض لما يقرب الوقت يخلص */
+.timer-low {
+    color: #ef4444 !important;
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* --- 8. الأنيميشن --- */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-pop {
+    animation: popIn 0.5s ease-out forwards;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+    }
+
+    .round-grid-modern {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .counter-number {
+        font-size: 4rem;
+    }
+} 
+ / *   - - -   7� 8 7�7� 7� 8y8  7� 7�  7� 8 7� 8& 7� 8 8y7�   7� 8 7� 7� 8y7� 7�   ( S p y   U I   &   C o n t r a s t )   - - -   * /  
+  
+ / *   1 .   7�8  7� 8y8!   7� 8 7� 7� 7� 8�7�   7� 8 8& 7� 8�7�   * /  
+ . s p y - r o l e - a l e r t   {  
+         b a c k g r o u n d :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 3 ) ;    
+         b o r d e r :   1 p x   s o l i d   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 3 ) ;  
+         b o r d e r - r i g h t :   6 p x   s o l i d   # e f 4 4 4 4 ;  
+         b o r d e r - r a d i u s :   1 8 p x ;  
+         p a d d i n g :   2 0 p x ;  
+         d i s p l a y :   f l e x ;  
+         a l i g n - i t e m s :   c e n t e r ;  
+         g a p :   2 0 p x ;  
+         b a c k d r o p - f i l t e r :   b l u r ( 1 0 p x ) ;  
+         m a r g i n - b o t t o m :   2 5 p x ;  
+         b o x - s h a d o w :   0   1 0 p x   4 0 p x   - 1 0 p x   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 5 ) ;  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 9 0 d e g ,   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 0 5 )   0 % ,   r g b a ( 0 , 0 , 0 , 0 )   1 0 0 % ) ;  
+         p o s i t i o n :   r e l a t i v e ;  
+         o v e r f l o w :   h i d d e n ;  
+         a n i m a t i o n :   s l i d e D o w n   0 . 6 s   c u b i c - b e z i e r ( 0 . 2 ,   0 . 8 ,   0 . 2 ,   1 ) ;  
+ }  
+  
+ . s p y - r o l e - a l e r t : : b e f o r e   {  
+         c o n t e n t :   ' ' ;  
+         p o s i t i o n :   a b s o l u t e ;  
+         t o p :   0 ;   l e f t :   0 ;   r i g h t :   0 ;   b o t t o m :   0 ;  
+         b a c k g r o u n d :   u r l ( ' / n o i s e . p n g ' ) ;   / *   7� 7� 7�8y7� 7� 8y  7� 7� 7�   8�7� 8    8& 8�7� 8�7�   * /  
+         o p a c i t y :   0 . 0 5 ;  
+         p o i n t e r - e v e n t s :   n o n e ;  
+ }  
+  
+ . s p y - i c o n - l a r g e   {  
+         f o n t - s i z e :   3 r e m ;  
+         f i l t e r :   d r o p - s h a d o w ( 0   5 p x   1 5 p x   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 4 ) ) ;  
+         a n i m a t i o n :   f l o a t I c o n   3 s   e a s e - i n - o u t   i n f i n i t e ;  
+ }  
+  
+ . s p y - t i t l e - t e x t   {  
+         f o n t - s i z e :   1 . 6 r e m ;  
+         f o n t - w e i g h t :   9 0 0 ;  
+         c o l o r :   # f 8 7 1 7 1 ;   / *   7� 7� 8& 7�   8~7� 7�7�   * /  
+         m a r g i n - b o t t o m :   5 p x ;  
+         l e t t e r - s p a c i n g :   - 0 . 5 p x ;  
+ }  
+  
+ . s p y - s u b t i t l e - t e x t   {  
+         f o n t - s i z e :   1 r e m ;  
+         c o l o r :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 8 5 ) ;  
+         f o n t - w e i g h t :   5 0 0 ;  
+ }  
+  
+ / *   2 .   7� 8  7� 7� 8y8   7� 8 7� 7� 7� 8 7�   7� 8 7� 7� 7� 7�   7� 7� 8 7� 7� 7� 8�7�   ( R e d   T h e m e )   * /  
+ . s p y - t h e m e - b o x - m o d e r n   {  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 0 8 ) ,   r g b a ( 1 2 7 ,   2 9 ,   2 9 ,   0 . 2 ) )   ! i m p o r t a n t ;  
+         b o r d e r - r i g h t - c o l o r :   # e f 4 4 4 4   ! i m p o r t a n t ;  
+         b o r d e r - t o p :   1 p x   s o l i d   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 2 ) ;  
+         b o r d e r - b o t t o m :   1 p x   s o l i d   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 ) ;  
+         b o x - s h a d o w :   0   1 5 p x   4 0 p x   - 1 0 p x   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 5 )   ! i m p o r t a n t ;  
+ }  
+  
+ . s p y - r e v e a l - b o x   {  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 ) ,   r g b a ( 6 9 ,   1 0 ,   1 0 ,   0 . 3 ) ) ;  
+         b o r d e r - r i g h t :   6 p x   s o l i d   # e f 4 4 4 4 ;  
+ }  
+  
+ / *   3 .   7� 7� 8 7� 7�   7�7� 7� 8y8    7� 8 8 8y7� 7� 7� 8�7� 7�   * /  
+ . p o i n t s - b a d g e   {  
+         / *   7�78y8y7�   8 8�8    7� 8 7� 8 8~8y7�   8�7� 8 8  7�   8 7� 8y7� 7� 7�   7� 8 7�7� 7� 8y8    * /  
+         b a c k g r o u n d :   v a r ( - - a c c e n t - g r e e n ) ;  
+         c o l o r :   # 0 6 4 e 3 b ;   / *   7� 7� 7� 7�   7� 7� 8�8    7� 7� 7� 89   8 8 8 7� 7� 77�   7� 8 8�7� 7� 7� 7�   * /  
+         f o n t - w e i g h t :   9 0 0 ;  
+         b o x - s h a d o w :   0   4 p x   1 5 p x   r g b a ( 1 6 ,   1 8 5 ,   1 2 9 ,   0 . 3 ) ;  
+ }  
+  
+ / *   7� 8  8y8& 8y7� 8    7� 7� 7� 8~8y  * /  
+ @ k e y f r a m e s   s l i d e D o w n   {  
+         f r o m   {   o p a c i t y :   0 ;   t r a n s f o r m :   t r a n s l a t e Y ( - 2 0 p x ) ;   }  
+         t o   {   o p a c i t y :   1 ;   t r a n s f o r m :   t r a n s l a t e Y ( 0 ) ;   }  
+ }  
+  
+ @ k e y f r a m e s   f l o a t I c o n   {  
+         0 % ,   1 0 0 %   {   t r a n s f o r m :   t r a n s l a t e Y ( 0 ) ;   }  
+         5 0 %   {   t r a n s f o r m :   t r a n s l a t e Y ( - 5 p x ) ;   }  
+ }  
+ / *   - - -   7� 8 7�7� 7� 8y8  7� 7�  7� 8 7� 8& 7� 8 8y7�   7� 8 7� 7� 8y7� 7�   ( S p y   U I   &   C o n t r a s t )   - - -   * /  
+  
+ / *   1 .   7�8  7� 8y8!   7� 8 7� 7� 7� 8�7�   7� 8 8& 7� 8�7�   ( B o l d   R e d   T h e m e )   * /  
+ . s p y - r o l e - a l e r t   {  
+         / *   7� 8 8~8y7�   7� 8& 7� 7� 7  8& 7�7� 7� 7� 7�   8 8�8y7�   8�7� 8& 8y8 7�   * /  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   # b 9 1 c 1 c   0 % ,   # e f 4 4 4 4   1 0 0 % ) ;  
+         b o r d e r :   1 p x   s o l i d   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 2 ) ;  
+         b o r d e r - r a d i u s :   2 0 p x ;  
+         p a d d i n g :   2 5 p x ;  
+         d i s p l a y :   f l e x ;  
+         a l i g n - i t e m s :   c e n t e r ;  
+         g a p :   2 5 p x ;  
+         m a r g i n - b o t t o m :   2 5 p x ;  
+         b o x - s h a d o w :   0   1 0 p x   3 0 p x   r g b a ( 2 2 0 ,   3 8 ,   3 8 ,   0 . 5 ) ;  
+         / *   7� 8   7� 7� 8& 7�   8& 7�8�8! 7�   * /  
+         p o s i t i o n :   r e l a t i v e ;  
+         o v e r f l o w :   h i d d e n ;  
+         a n i m a t i o n :   s l i d e D o w n   0 . 6 s   c u b i c - b e z i e r ( 0 . 2 ,   0 . 8 ,   0 . 2 ,   1 ) ;  
+         c o l o r :   w h i t e ;  
+ }  
+  
+ / *   7�7� 7� 8y7�   8 8& 7� 7� 8    7� 8~8y8~  * /  
+ . s p y - r o l e - a l e r t : : a f t e r   {  
+         c o n t e n t :   ' ' ;  
+         p o s i t i o n :   a b s o l u t e ;  
+         t o p :   - 5 0 % ;  
+         l e f t :   - 5 0 % ;  
+         w i d t h :   2 0 0 % ;  
+         h e i g h t :   2 0 0 % ;  
+         b a c k g r o u n d :   r a d i a l - g r a d i e n t ( c i r c l e ,   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 2 )   0 % ,   t r a n s p a r e n t   7 0 % ) ;  
+         o p a c i t y :   0 . 5 ;  
+         p o i n t e r - e v e n t s :   n o n e ;  
+         t r a n s f o r m :   r o t a t e ( 4 5 d e g ) ;  
+ }  
+  
+ . s p y - i c o n - l a r g e   {  
+         f o n t - s i z e :   3 . 5 r e m ;  
+         f i l t e r :   d r o p - s h a d o w ( 0   5 p x   1 0 p x   r g b a ( 0 ,   0 ,   0 ,   0 . 3 ) ) ;  
+         a n i m a t i o n :   f l o a t I c o n   3 s   e a s e - i n - o u t   i n f i n i t e ;  
+         z - i n d e x :   2 ;  
+ }  
+  
+ . s p y - t i t l e - t e x t   {  
+         f o n t - s i z e :   1 . 8 r e m ;  
+         f o n t - w e i g h t :   9 0 0 ;  
+         c o l o r :   # f f f ;  
+         m a r g i n - b o t t o m :   5 p x ;  
+         l e t t e r - s p a c i n g :   - 0 . 5 p x ;  
+         t e x t - s h a d o w :   0   2 p x   4 p x   r g b a ( 0 ,   0 ,   0 ,   0 . 2 ) ;  
+         z - i n d e x :   2 ;  
+         p o s i t i o n :   r e l a t i v e ;  
+ }  
+  
+ . s p y - s u b t i t l e - t e x t   {  
+         f o n t - s i z e :   1 . 1 r e m ;  
+         c o l o r :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 9 5 ) ;  
+         f o n t - w e i g h t :   5 0 0 ;  
+         z - i n d e x :   2 ;  
+         p o s i t i o n :   r e l a t i v e ;  
+ }  
+  
+ / *   2 .   7� 8  7� 7� 8y8   7� 8 7� 7� 7� 8 7�   7� 8 7� 7� 7� 7�   7� 7� 8 7� 7� 7� 8�7�   ( R e d   T h e m e )   * /  
+ . s p y - t h e m e - b o x - m o d e r n   {  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 0 8 ) ,   r g b a ( 1 2 7 ,   2 9 ,   2 9 ,   0 . 2 ) )   ! i m p o r t a n t ;  
+         b o r d e r - r i g h t - c o l o r :   # e f 4 4 4 4   ! i m p o r t a n t ;  
+         b o r d e r - t o p :   1 p x   s o l i d   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 2 ) ;  
+         b o r d e r - b o t t o m :   1 p x   s o l i d   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 ) ;  
+         b o x - s h a d o w :   0   1 5 p x   4 0 p x   - 1 0 p x   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 5 )   ! i m p o r t a n t ;  
+ }  
+  
+ . s p y - r e v e a l - b o x   {  
+         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   r g b a ( 2 3 9 ,   6 8 ,   6 8 ,   0 . 1 ) ,   r g b a ( 6 9 ,   1 0 ,   1 0 ,   0 . 3 ) ) ;  
+         b o r d e r - r i g h t :   6 p x   s o l i d   # e f 4 4 4 4 ;  
+ }  
+  
+ / *   3 .   7� 7� 8 7� 7�   7�7� 7� 8y8    7� 8 8 8y7� 7� 7� 8�7� 7�   * /  
+ . p o i n t s - b a d g e   {  
+         / *   7�78y8y7�   8 8�8    7� 8 7� 8 8~8y7�   8�7� 8 8  7�   8 7� 8y7� 7� 7�   7� 8 7�7� 7� 8y8    * /  
+         b a c k g r o u n d :   v a r ( - - a c c e n t - g r e e n ) ;  
+         c o l o r :   # 0 6 4 e 3 b ;  
+         / *   7� 7� 7� 7�   7� 7� 8�8    7� 7� 7� 89   8 8 8 7� 7� 77�   7� 8 8�7� 7� 7� 7�   * /  
+         f o n t - w e i g h t :   9 0 0 ;  
+         b o x - s h a d o w :   0   4 p x   1 5 p x   r g b a ( 1 6 ,   1 8 5 ,   1 2 9 ,   0 . 3 ) ;  
+ }  
+  
+ / *   7� 8  8y8& 8y7� 8    7� 7� 7� 8~8y  * /  
+ @ k e y f r a m e s   s l i d e D o w n   {  
+         f r o m   {  
+                 o p a c i t y :   0 ;  
+                 t r a n s f o r m :   t r a n s l a t e Y ( - 2 0 p x ) ;  
+         }  
+  
+         t o   {  
+                 o p a c i t y :   1 ;  
+                 t r a n s f o r m :   t r a n s l a t e Y ( 0 ) ;  
+         }  
+ }  
+  
+ @ k e y f r a m e s   f l o a t I c o n   {  
+  
+         0 % ,  
+         1 0 0 %   {  
+                 t r a n s f o r m :   t r a n s l a t e Y ( 0 ) ;  
+         }  
+  
+         5 0 %   {  
+                 t r a n s f o r m :   t r a n s l a t e Y ( - 5 p x ) ;  
+         }  
+ }  
+ 
