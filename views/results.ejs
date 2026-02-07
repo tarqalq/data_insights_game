@@ -117,9 +117,10 @@
                 roleAlertHeader.innerHTML = "";
                 instructionText.innerText = `اختر ${maxSpyCount} إجابات مشبوهة:`;
                 roleHintArea.innerHTML = `
-                <div class="question-container">
-                    <span class="question-label">🔍 مهمة البحث عن سؤال الجاسوس:</span>
-                    <p class="question-text">${data.spyQuestion}</p>
+                <div class="question-container" style="background: rgba(220, 38, 38, 0.9); border: 2px solid #991b1b; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);">
+                    <span class="question-label" style="color: #fecaca; font-size: 1.1rem;">🕵️‍♂️ مهمة البحث عن جواب الجاسوس:</span>
+                    <p style="color: #fee2e2; margin: 5px 0 0 0; font-size: 0.9rem;">هذا هو سؤال الجاسوس 👇</p>
+                    <p class="question-text" style="color: white; font-weight: 800; font-size: 1.6rem; margin-top: 10px;">"${data.spyQuestion}"</p>
                 </div>`;
             }
         });
