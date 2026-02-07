@@ -1,144 +1,0 @@
-<%- include('partials/header') %>
-
-<div class="container animate-pop">
-    <div id="timerArea" class="timer-wrapper" style="display: none; justify-content: center; margin-bottom: 20px;">
-        <span class="timer-icon">⏳</span>
-        <span id="timerDisplay" class="timer-count">0</span>
-    </div>
-
-    <div id="waitingScreen" class="loading-screen">
-        <div class="pulse-loader"></div>
-        <h3 class="primary-text">جاري تحضير سؤالك... ⏳</h3>
-        <p class="secondary-text">يرجى عدم تحديث الصفحة</p>
-    </div>
-
-    <div id="gameArea" class="fade-in-area" style="display: none;">
-        <div id="roleDisplay" class="role-badge">✨ استعد للإجابة</div>
-        
-        <div id="qContainer" class="question-container">
-            <span class="question-label" id="qLabel">السؤال الموجه لك:</span>
-            <p id="questionDisplay" class="question-text">جاري استلام السؤال...</p>
-        </div>
-
-        <form id="answerForm" class="mt-20">
-            <input type="text" id="answerInput" class="input-standard" placeholder="اكتب إجابتك هنا..." required autocomplete="off">
-            <button type="submit" id="submitBtn" class="btn-primary">إرسال الإجابة ⚡</button>
-        </form>
-
-        <div id="feedback" class="feedback-area" style="display: none;">
-            <div class="success-icon">✅</div>
-            <h3 class="success-text">تم الإرسال بنجاح!</h3>
-            <p class="secondary-text mt-10">الآن بدأت اللعبة.. انتظر عرض الإجابات لتبدأ عملية التخمين! 🕵️‍♂️</p>
-        </div>
-    </div>
-</div>
-
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    const socket = io();
-    const waitingScreen = document.getElementById('waitingScreen');
-    const gameArea = document.getElementById('gameArea');
-    const questionDisplay = document.getElementById('questionDisplay');
-    const qContainer = document.getElementById('qContainer');
-    const qLabel = document.getElementById('qLabel');
-    const roleDisplay = document.getElementById('roleDisplay');
-    const answerForm = document.getElementById('answerForm');
-    const answerInput = document.getElementById('answerInput');
-    const feedback = document.getElementById('feedback');
-    const timerArea = document.getElementById('timerArea');
-    const timerDisplay = document.getElementById('timerDisplay');
-
-    const playerName = localStorage.getItem('data_insights_name');
-    let timerInterval;
-
-    if (playerName) {
-        socket.emit('join_game', { name: playerName });
-    } else {
-        window.location.replace('/');
-    }
-
-    // منطق العداد الموحد بناءً على وقت النهاية (endTime) المستلم من السيرفر
-    socket.on('start_countdown', (endTime) => {
-        if (!timerArea || !timerDisplay) return;
-
-        clearInterval(timerInterval);
-        timerArea.style.display = 'inline-flex';
-
-        timerInterval = setInterval(() => {
-            const now = Date.now();
-            const distance = endTime - now;
-            
-            // حساب الثواني المتبقية
-            const timeLeft = Math.ceil(distance / 1000);
-
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                timerDisplay.innerText = "0";
-                return;
-            }
-
-            timerDisplay.innerText = timeLeft;
-
-            // وميض أحمر في آخر 5 ثواني
-            if (timeLeft <= 5) {
-                timerDisplay.classList.add('timer-low');
-            } else {
-                timerDisplay.classList.remove('timer-low');
-            }
-        }, 1000);
-    });
-
-    function displayQuestion(question, role) {
-        if (!question) return;
-        waitingScreen.style.display = 'none';
-        gameArea.style.display = 'block';
-        questionDisplay.innerText = question;
-        
-        qContainer.className = "question-container"; 
-        qLabel.innerText = "السؤال الموجه لك:"; 
-        roleDisplay.innerText = "✨ جاوب بمصداقية";
-    }
-
-    const savedQuestion = sessionStorage.getItem('currentQuestion');
-    const savedRole = sessionStorage.getItem('playerRole');
-    if (savedQuestion) displayQuestion(savedQuestion, savedRole);
-
-    socket.on('receive_question', (data) => {
-        sessionStorage.setItem('currentQuestion', data.question);
-        sessionStorage.setItem('playerRole', data.role);
-        displayQuestion(data.question, data.role);
-    });
-
-    answerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const answer = answerInput.value.trim();
-
-        if (answer && playerName) {
-            socket.emit('submit_answer', { name: playerName, answer: answer });
-            answerForm.style.display = 'none';
-            qContainer.classList.add('faded'); 
-            feedback.style.display = 'block';
-        }
-    });
-
-    socket.on('reveal_all_answers', (data) => {
-        clearInterval(timerInterval);
-        sessionStorage.setItem('allAnswers', JSON.stringify(data.answers));
-        window.location.href = '/results';
-    });
-
-    socket.on('back_to_lobby', () => {
-        clearInterval(timerInterval);
-        sessionStorage.clear();
-        window.location.replace('/lobby');
-    });
-
-    socket.on('force_logout', () => {
-        clearInterval(timerInterval);
-        localStorage.removeItem('data_insights_name');
-        sessionStorage.clear();
-        window.location.replace('/');
-    });
-</script>
-
-<%- include('partials/footer') %>

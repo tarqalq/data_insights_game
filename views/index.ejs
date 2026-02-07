@@ -1,94 +1,0 @@
-<%- include('partials/header') %>
-
-<div class="container">
-    <h2 class="main-title">رؤى البيانات</h2>
-    <p class="sub-title-text">Data Insights Community</p>
-
-    <hr class="divider">
-
-    <div id="joinCard" class="card animate-pop">
-        <h3>مرحباً بك في الفعالية! 👋</h3>
-        <p>فضلاً ادخل اسمك للانضمام إلى اللعبة التفاعلية</p>
-
-        <form id="joinForm" class="mt-20">
-            <input type="text" id="playerName" 
-                   class="input-standard"
-                   placeholder="اكتب اسمك الحقيقي هنا..." 
-                   required 
-                   autocomplete="off">
-            
-            <button type="submit" id="joinBtn" class="btn-primary">
-                انضم الآن 🚀
-            </button>
-        </form>
-
-        <div id="statusMessage" class="status-msg" style="display: none;">
-            جاري تأمين اتصالك وحفظ بياناتك...
-        </div>
-    </div>
-</div>
-
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    const socket = io();
-    const joinForm = document.getElementById('joinForm');
-    const playerNameInput = document.getElementById('playerName');
-    const statusMessage = document.getElementById('statusMessage');
-    const joinBtn = document.getElementById('joinBtn');
-
-    if (localStorage.getItem('data_insights_name')) {
-        window.location.replace('/lobby');
-    }
-
-    playerNameInput.focus();
-
-    joinForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = playerNameInput.value.trim();
-        
-        if (name) {
-            joinBtn.disabled = true;
-            joinBtn.innerText = 'جاري التحقق...';
-            statusMessage.style.display = 'block';
-            statusMessage.innerText = 'جاري الاتصال بالسيرفر...';
-
-            const timeout = setTimeout(() => {
-                if (joinBtn.disabled) {
-                    alert('يبدو أن هناك بطء في الاتصال، يرجى المحاولة مرة أخرى.');
-                    resetUI();
-                }
-            }, 5000);
-
-            socket.emit('join_game', { name: name }, (response) => {
-                clearTimeout(timeout); 
-
-                if (response && response.status === 'ok') {
-                    localStorage.setItem('data_insights_name', name);
-                    statusMessage.innerText = 'تم تسجيلك بنجاح! جاري الدخول...';
-                    window.location.replace('/lobby');
-                } else if (response && response.status === 'taken') {
-                    alert(response.message);
-                    resetUI();
-                } else {
-                    alert('عذراً، حدث خطأ تقني غير متوقع.');
-                    resetUI();
-                }
-            });
-        }
-    });
-
-    function resetUI() {
-        joinBtn.disabled = false;
-        joinBtn.innerText = 'انضم الآن 🚀';
-        statusMessage.style.display = 'none';
-        playerNameInput.focus();
-    }
-
-    socket.on('force_logout', () => {
-        localStorage.removeItem('data_insights_name');
-        sessionStorage.clear();
-        window.location.replace('/');
-    });
-</script>
-
-<%- include('partials/footer') %>
