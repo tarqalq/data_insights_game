@@ -32,23 +32,32 @@ if (!process.env.DATABASE_URL) {
 
 // اختبار الاتصال بقاعدة البيانات
 // اختبار الاتصال بقاعدة البيانات وإصلاح الـ Schema تلقائياً
+const fs = require('fs');
+
+// اختبار الاتصال بقاعدة البيانات وإصلاح الـ Schema تلقائياً
 pool.connect(async (err, client, release) => {
     if (err) {
         console.error('❌ Database connection error:', err.message);
     } else {
         console.log('✅ Server connected to PostgreSQL successfully');
 
-        // إصلاح سريع للـ Schema للتأكد من وجود الأعمدة المطلوبة
         try {
+            // 1. تنفيذ ملف Schema بالكامل (لإنشاء الجداول في Render)
+            const schemaPath = path.join(__dirname, 'database', 'schema.sql');
+            const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+            await client.query(schemaSql);
+            console.log('✅ Database schema initialized successfully (tables created if missing)');
+
+            // 2. إصلاح سريع إضافي للتأكد من الأعمدة (للتحديثات المستقبلية)
             await client.query(`
                 ALTER TABLE players_scores 
                 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 ADD COLUMN IF NOT EXISTS times_spy INTEGER DEFAULT 0;
             `);
-            console.log('✅ Checked/Fixed database schema (players_scores columns including times_spy)');
+            console.log('✅ Verified specific columns in players_scores');
         } catch (dbErr) {
-            console.error('⚠️ Warning checking schema:', dbErr.message);
+            console.error('⚠️ Error initializing schema:', dbErr.message);
         }
 
         release();
